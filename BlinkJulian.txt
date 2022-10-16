@@ -1,0 +1,108 @@
+/*
+
+*/
+
+int SwitchOn = 0;
+int LED_GREEN_PORT = 7;
+int LED_RED_PORT = 12;
+int SWITCH_PORT = 2;
+int BLINK_SPEED = 100;
+int IsBlinkOn = 0;
+int IsRedOn = 0;
+
+enum MachineState {
+  MACHINESTATE_UNKNOWN,
+  MACHINESTATE_IDLE,
+  MACHINESTATE_BLINKING
+};
+
+MachineState CurrentMachineState = MACHINESTATE_UNKNOWN;
+
+struct LedStatusStruct
+{
+   bool IsRedOn = false;
+   bool IsGreenOn = false;
+};
+
+struct LedStatusStruct CurrentLedStatus;
+
+struct AppModeStruct
+{
+   bool IsBlinkOn = false;
+   int BlinkSpeed = 1000;  
+};
+
+struct AppModeStruct CurrentAppMode;
+
+// The setup function runs once when you press reset or power the board
+void setup() 
+{
+  // initialize digital pin LED_BUILTIN as an output.
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_RED_PORT, OUTPUT); 
+  pinMode(LED_GREEN_PORT, OUTPUT); 
+  pinMode(SWITCH_PORT, INPUT_PULLUP);
+  Serial.begin(9600);
+}
+
+// the loop function runs over and over again forever
+void loop() 
+{
+  
+  SwitchOn = digitalRead(SWITCH_PORT);
+
+  Serial.print("SwitchOn : ");
+  Serial.println(SwitchOn);
+  Serial.println("IsBlinkOn : ");
+  Serial.println(IsBlinkOn);
+
+  if(SwitchOn == 0)
+  {
+    digitalWrite(LED_RED_PORT, LOW);   // turn the LED on (HIGH is the voltage level)
+    digitalWrite(LED_GREEN_PORT, LOW);    
+  }
+  else
+  {
+    if(IsBlinkOn == 1)
+    {
+      if(IsRedOn == 1)
+      {
+        digitalWrite(LED_RED_PORT, HIGH);   // turn the LED on (HIGH is the voltage level)
+        digitalWrite(LED_GREEN_PORT, LOW);              
+      }
+      else
+      {
+        digitalWrite(LED_RED_PORT, LOW);   // turn the LED on (HIGH is the voltage level)
+        digitalWrite(LED_GREEN_PORT, HIGH);                      
+      }      
+    }
+    else
+    {
+      digitalWrite(LED_RED_PORT, LOW);   // turn the LED on (HIGH is the voltage level)
+      digitalWrite(LED_GREEN_PORT, LOW);                    
+    }
+  }
+  
+  delay(CurrentAppMode.BlinkSpeed);                       // wait for a second
+  
+  if(IsBlinkOn == 1)
+  {
+    IsBlinkOn = 0;    
+  } 
+  else
+  {
+    IsBlinkOn = 1;
+  }
+
+  if(IsBlinkOn == 1)
+  {
+    if(IsRedOn == 1)
+    {
+      IsRedOn = 0;    
+    } 
+    else
+    {
+      IsRedOn = 1;
+    }
+  }
+}
